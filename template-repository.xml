@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TemplateList>
+  <Template>
+    <Name>Beszel Hub</Name>
+    <Description>Beszel server monitoring hub — web UI and backend. Install once per cluster.</Description>
+    <Overview>Beszel is a lightweight, self-hosted server monitoring solution. The hub provides the web interface and collects data from agents running on each server.</Overview>
+    <Category>Tools:</Category>
+    <Repository>henrygd/beszel:latest</Repository>
+    <Registry>https://hub.docker.com/r/henrygd/beszel</Registry>
+    <Icon>https://raw.githubusercontent.com/henrygd/beszel/main/hub/site/static/favicon.svg</Icon>
+    <TemplateURL>https://raw.githubusercontent.com/jbowensii/unraid-beszel-templates/main/templates/beszel-hub.xml</TemplateURL>
+  </Template>
+  <Template>
+    <Name>Beszel Agent (No GPU)</Name>
+    <Description>Beszel monitoring agent for servers without an Nvidia GPU.</Description>
+    <Overview>Lightweight monitoring agent that reports system stats back to a Beszel hub. Uses host networking for SSH connectivity.</Overview>
+    <Category>Tools:</Category>
+    <Repository>henrygd/beszel-agent:latest</Repository>
+    <Registry>https://hub.docker.com/r/henrygd/beszel-agent</Registry>
+    <Icon>https://raw.githubusercontent.com/henrygd/beszel/main/hub/site/static/favicon.svg</Icon>
+    <TemplateURL>https://raw.githubusercontent.com/jbowensii/unraid-beszel-templates/main/templates/beszel-agent-no-gpu.xml</TemplateURL>
+  </Template>
+  <Template>
+    <Name>Beszel Agent (Nvidia GPU)</Name>
+    <Description>Beszel monitoring agent with full Nvidia GPU monitoring via glibc bind-mount injection for the distroless container image.</Description>
+    <Overview>Monitoring agent with Nvidia GPU support. Requires bind-mounting glibc and nvidia-smi into the distroless container. See docs/gpu-setup.md for details.</Overview>
+    <Category>Tools:</Category>
+    <Repository>henrygd/beszel-agent:latest</Repository>
+    <Registry>https://hub.docker.com/r/henrygd/beszel-agent</Registry>
+    <Icon>https://raw.githubusercontent.com/henrygd/beszel/main/hub/site/static/favicon.svg</Icon>
+    <TemplateURL>https://raw.githubusercontent.com/jbowensii/unraid-beszel-templates/main/templates/beszel-agent-gpu.xml</TemplateURL>
+  </Template>
+</TemplateList>

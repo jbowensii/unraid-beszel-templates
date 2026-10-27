@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>beszel-agent</Name>
+  <Repository>henrygd/beszel-agent:latest</Repository>
+  <Registry>https://hub.docker.com/r/henrygd/beszel-agent</Registry>
+  <Network>host</Network>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/henrygd/beszel</Support>
+  <Overview>Beszel monitoring agent — reports system stats back to the hub. Uses host networking so the hub can reach it via SSH.[br][br]Requires the SSH public key from your hub's Settings → Keys page.</Overview>
+  <Category>Tools:</Category>
+  <TemplateURL>https://raw.githubusercontent.com/jbowensii/unraid-beszel-templates/main/templates/beszel-agent-no-gpu.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/henrygd/beszel/main/hub/site/static/favicon.svg</Icon>
+  <ExtraParams>--restart unless-stopped</ExtraParams>
+
+  <Config Name="KEY" Target="KEY" Default=""
+          Type="Variable" Required="true" Mask="true"
+          Description="SSH public key from the hub (Settings → Keys). Required for the agent to authenticate with the hub."></Config>
+
+  <Config Name="SENSORS_EXCLUDE" Target="SENSORS_EXCLUDE"
+          Default="AUXTIN0,AUXTIN1,AUXTIN2,AUXTIN3,AUXTIN4,AUXTIN5,PCH_CHIP_CPU_MAX_TEMP,PCH_CPU_TEMP,PCH_MCH_TEMP,in0,in1,in2,in3,in4,in5,in6,in7,in8,in9,in10,in11,in12,in13,in14,in15,in16,intrusion0,intrusion1"
+          Type="Variable" Required="false" Mask="false"
+          Description="Comma-separated sensor names to exclude. The default suppresses phantom sensors common on Supermicro/ASUS server boards (unwired AUXTIN, PCH, voltage and intrusion pins). Run 'sensors -u' on the host to see your actual sensor names and adjust this list.">AUXTIN0,AUXTIN1,AUXTIN2,AUXTIN3,AUXTIN4,AUXTIN5,PCH_CHIP_CPU_MAX_TEMP,PCH_CPU_TEMP,PCH_MCH_TEMP,in0,in1,in2,in3,in4,in5,in6,in7,in8,in9,in10,in11,in12,in13,in14,in15,in16,intrusion0,intrusion1</Config>
+
+  <Config Name="Docker Socket" Target="/var/run/docker.sock" Default="/var/run/docker.sock"
+          Mode="ro" Type="Path" Required="true" Mask="false"
+          Description="Docker socket for container stats reporting. Read-only.">/var/run/docker.sock</Config>
+
+  <Config Name="Agent Data" Target="/var/lib/beszel-agent" Default="/mnt/user/appdata/beszel-agent"
+          Mode="rw" Type="Path" Required="true" Mask="false"
+          Description="Persistent storage for agent state.">/mnt/user/appdata/beszel-agent</Config>
+</Container>

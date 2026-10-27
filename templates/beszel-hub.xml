@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>beszel-hub</Name>
+  <Repository>henrygd/beszel:latest</Repository>
+  <Registry>https://hub.docker.com/r/henrygd/beszel</Registry>
+  <Network>bridge</Network>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/henrygd/beszel</Support>
+  <Overview>Beszel is a lightweight, self-hosted server monitoring solution. The hub provides the web UI and backend — install it once, then add agents on each server you want to monitor.[br][br]After installation, go to Settings → Keys to get the SSH public key your agents will need.</Overview>
+  <Category>Tools:</Category>
+  <WebUI>http://[IP]:[PORT:8090]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/jbowensii/unraid-beszel-templates/main/templates/beszel-hub.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/henrygd/beszel/main/hub/site/static/favicon.svg</Icon>
+  <ExtraParams>--restart unless-stopped</ExtraParams>
+
+  <Config Name="Data" Target="/beszel_data" Default="/mnt/user/appdata/beszel-hub"
+          Mode="rw" Type="Path" Required="true" Mask="false"
+          Description="Persistent storage for the hub database and configuration.">/mnt/user/appdata/beszel-hub</Config>
+
+  <Config Name="Web UI Port" Target="8090" Default="8090"
+          Mode="tcp" Type="Port" Required="true" Mask="false"
+          Description="Port for the Beszel web interface. Change the host side if 8090 is taken.">8090</Config>
+</Container>

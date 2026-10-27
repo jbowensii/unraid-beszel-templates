@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>beszel-agent-gpu</Name>
+  <Repository>henrygd/beszel-agent:latest</Repository>
+  <Registry>https://hub.docker.com/r/henrygd/beszel-agent</Registry>
+  <Network>host</Network>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/henrygd/beszel</Support>
+  <Overview>Beszel monitoring agent with Nvidia GPU support. The beszel-agent image is distroless (no glibc), so this template bind-mounts the host's dynamic linker, C libraries and nvidia-smi into the container.[br][br]After an Nvidia driver upgrade, update the versioned libnvidia-ml host path and the ld-linker host path. See docs/gpu-setup.md for discovery commands.</Overview>
+  <Category>Tools:</Category>
+  <TemplateURL>https://raw.githubusercontent.com/jbowensii/unraid-beszel-templates/main/templates/beszel-agent-gpu.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/henrygd/beszel/main/hub/site/static/favicon.svg</Icon>
+  <!-- --gpus all exposes Nvidia GPU devices via the Nvidia Container Toolkit -->
+  <ExtraParams>--restart unless-stopped --gpus all</ExtraParams>
+
+  <!-- ===== Standard agent config (same as no-GPU template) ===== -->
+
+  <Config Name="KEY" Target="KEY" Default=""
+          Type="Variable" Required="true" Mask="true"
+          Description="SSH public key from the hub (Settings → Keys). Required for the agent to authenticate with the hub."></Config>
+
+  <Config Name="SENSORS_EXCLUDE" Target="SENSORS_EXCLUDE"
+          Default="AUXTIN0,AUXTIN1,AUXTIN2,AUXTIN3,AUXTIN4,AUXTIN5,PCH_CHIP_CPU_MAX_TEMP,PCH_CPU_TEMP,PCH_MCH_TEMP,in0,in1,in2,in3,in4,in5,in6,in7,in8,in9,in10,in11,in12,in13,in14,in15,in16,intrusion0,intrusion1"
+          Type="Variable" Required="false" Mask="false"
+          Description="Comma-separated sensor names to exclude. The default suppresses phantom sensors common on Supermicro/ASUS server boards. Run 'sensors -u' on the host to discover your actual sensor names.">AUXTIN0,AUXTIN1,AUXTIN2,AUXTIN3,AUXTIN4,AUXTIN5,PCH_CHIP_CPU_MAX_TEMP,PCH_CPU_TEMP,PCH_MCH_TEMP,in0,in1,in2,in3,in4,in5,in6,in7,in8,in9,in10,in11,in12,in13,in14,in15,in16,intrusion0,intrusion1</Config>
+
+  <Config Name="Docker Socket" Target="/var/run/docker.sock" Default="/var/run/docker.sock"
+          Mode="ro" Type="Path" Required="true" Mask="false"
+          Description="Docker socket for container stats reporting. Read-only.">/var/run/docker.sock</Config>
+
+  <Config Name="Agent Data" Target="/var/lib/beszel-agent" Default="/mnt/user/appdata/beszel-agent"
+          Mode="rw" Type="Path" Required="true" Mask="false"
+          Description="Persistent storage for agent state.">/mnt/user/appdata/beszel-agent</Config>
+
+  <!-- ===== Nvidia GPU bind-mounts ===== -->
+  <!-- These inject the host's glibc, dynamic linker and Nvidia libraries into the distroless container.
+       After a driver upgrade, update the ld-linker host path and the versioned libnvidia-ml host path.
+       Run these on the host to get current values:
+         readlink -f /lib64/ld-linux-x86-64.so.2
+         nvidia-smi - -query-gpu=driver_version - -format=csv,noheader
+  -->
+
+  <Config Name="nvidia-smi" Target="/usr/bin/nvidia-smi" Default="/usr/bin/nvidia-smi"
+          Mode="ro" Type="Path" Required="true" Mask="false"
+          Description="Nvidia system management interface binary. Path is standard on Unraid.">/usr/bin/nvidia-smi</Config>
+
+  <!-- Update DRIVER_VER below after Unraid driver upgrades -->
+  <Config Name="ld-linker" Target="/lib64/ld-linux-x86-64.so.2" Default="/lib64/ld-linux-x86-64-2.43.so"
+          Mode="ro" Type="Path" Required="true" Mask="false"
+          Description="ELF dynamic linker. Host path must be the REAL file, not the symlink. Run: readlink -f /lib64/ld-linux-x86-64.so.2">/lib64/ld-linux-x86-64-2.43.so</Config>
+
+  <Config Name="libpthread" Target="/lib64/libpthread.so.0" Default="/lib64/libpthread.so.0"
+          Mode="ro" Type="Path" Required="true" Mask="false"
+          Description="POSIX threads library. Path is standard on Unraid.">/lib64/libpthread.so.0</Config>
+
+  <Config Name="libm" Target="/lib64/libm.so.6" Default="/lib64/libm.so.6"
+          Mode="ro" Type="Path" Required="true" Mask="false"
+          Description="Math library. Path is standard on Unraid.">/lib64/libm.so.6</Config>
+
+  <Config Name="libdl" Target="/lib64/libdl.so.2" Default="/lib64/libdl.so.2"
+          Mode="ro" Type="Path" Required="true" Mask="false"
+          Description="Dynamic linking library. Path is standard on Unraid.">/lib64/libdl.so.2</Config>
+
+  <Config Name="libc" Target="/lib64/libc.so.6" Default="/lib64/libc.so.6"
+          Mode="ro" Type="Path" Required="true" Mask="false"
+          Description="GNU C library. Path is standard on Unraid.">/lib64/libc.so.6</Config>
+
+  <Config Name="librt" Target="/lib64/librt.so.1" Default="/lib64/librt.so.1"
+          Mode="ro" Type="Path" Required="true" Mask="false"
+          Description="POSIX realtime extensions library. Path is standard on Unraid.">/lib64/librt.so.1</Config>
+
+  <!-- Update DRIVER_VER below after Unraid driver upgrades -->
+  <Config Name="libnvidia-ml (versioned)" Target="/usr/lib/libnvidia-ml.so.615.78.08" Default="/usr/lib/libnvidia-ml.so.615.78.08"
+          Mode="ro" Type="Path" Required="true" Mask="false"
+          Description="Versioned Nvidia ML library. BOTH host and container paths contain the driver version. After a driver upgrade, run: nvidia-smi --query-gpu=driver_version --format=csv,noheader — then update both paths.">/usr/lib/libnvidia-ml.so.615.78.08</Config>
+
+  <Config Name="libnvidia-ml.so.1" Target="/usr/lib/libnvidia-ml.so.1" Default="/usr/lib/libnvidia-ml.so.1"
+          Mode="ro" Type="Path" Required="true" Mask="false"
+          Description="Nvidia ML soname symlink. Path is standard.">/usr/lib/libnvidia-ml.so.1</Config>
+
+  <Config Name="libnvidia-ml.so" Target="/usr/lib/libnvidia-ml.so" Default="/usr/lib/libnvidia-ml.so"
+          Mode="ro" Type="Path" Required="true" Mask="false"
+          Description="Nvidia ML development symlink. Path is standard.">/usr/lib/libnvidia-ml.so</Config>
+</Container>
